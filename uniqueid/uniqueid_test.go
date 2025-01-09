@@ -1,4 +1,4 @@
-package main
+package uniqueid
 
 import (
 	"sync"
@@ -10,7 +10,7 @@ func TestUniqueID_NoDuplicates(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	numIterations := 8190
+	numIterations := 10000
 	numGoroutines := 10 // Number of goroutines to use
 	iterationsPerGoroutine := numIterations / numGoroutines
 
@@ -27,7 +27,7 @@ func TestUniqueID_NoDuplicates(t *testing.T) {
 			defer wg.Done()
 			for i := 0; i < iterationsPerGoroutine; i++ {
 				newID := id.Next()
-				results <- newID
+				results <- uint64(newID)
 			}
 		}()
 	}
@@ -47,6 +47,7 @@ func TestUniqueID_NoDuplicates(t *testing.T) {
 	// Check for duplicates
 	seen := make(map[uint64]bool)
 	for _, id := range ids {
+		//println(UniqueID(id).String())
 		if seen[id] {
 			t.Fatalf("Duplicate ID detected: %d (%b)", id, id)
 		}
